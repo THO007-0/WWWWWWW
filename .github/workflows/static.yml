@@ -1,43 +1,99 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎓 Certificate Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
 
-on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+  <div class="container">
+    <h1 class="title">🎓 Certificate Generator</h1>
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    <div class="main-content">
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+      <!-- Left Panel -->
+      <aside class="left-panel">
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+        <section class="upload-section">
+          <label for="excelFile" class="label">📁 Upload Excel File (.xlsx):</label>
+          <input type="file" id="excelFile" accept=".xlsx" class="input-file" />
+        </section>
 
-jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        <section class="upload-section">
+          <label for="templateUpload" class="label">🖼️ Upload Template Image:</label>
+          <input type="file" id="templateUpload" accept="image/*" onchange="uploadTemplate(this)" class="input-file" />
+        </section>
+
+        <section class="input-section">
+          <label for="title" class="label">🏷️ Certificate Title:</label>
+          <input type="text" id="title" value="Certificate of Completion" class="input-text" />
+        </section>
+
+        <section class="input-section">
+          <label for="presented" class="label">✍️ Subtitle:</label>
+          <input type="text" id="presented" value="This certificate is presented to" class="input-text" />
+        </section>
+
+        <section class="input-section">
+          <label for="reason" class="label">💬 Description:</label>
+          <textarea id="reason" rows="2" class="input-textarea">For outstanding performance</textarea>
+        </section>
+
+        <section class="input-section">
+          <label for="sheetUrl" class="label">🔗 Google Sheets URL:</label>
+          <input type="text" id="sheetUrl" placeholder="URL ที่แชร์แบบ public" class="input-text" />
+          <button class="btn" onclick="loadFromSheet()">โหลดชื่อจาก Google Sheets</button>
+        </section>
+
+        <section class="input-section">
+          <label for="fileType" class="label">📄 Download as:</label>
+          <select id="fileType" class="input-select">
+            <option value="pdf">PDF</option>
+            <option value="jpg">JPG</option>
+          </select>
+        </section>
+
+        <section class="button-group">
+          <button class="btn" onclick="prevName()">← Prev</button>
+          <button class="btn" onclick="nextName()">Next →</button>
+          <button class="btn primary" onclick="downloadCertificate()">📥 Download</button>
+          <button class="btn primary" onclick="downloadAll()">📦 Download All</button>
+          <button class="btn" onclick="window.location.reload(true)">🔄 Refresh</button>
+        </section>a
+
+        <p class="page-info">Showing: <span id="pageNum">1 / 1</span></p>
+
+        <section class="template-selector">
+          <label class="label">📌 เลือกเทมเพลตพื้นหลัง:</label>
+          <div class="template-thumbnails">
+            <img src="hakiri.jpg" alt="Template 1" class="template-thumbnail selected" onclick="selectTemplate(this, 'hakiri.jpg')" />
+            <img src="template2.jpg" alt="Template 2" class="template-thumbnail" onclick="selectTemplate(this, 'template2.jpg')" />
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Right Panel -->
+      <main class="right-panel">
+        <div id="certificatePreview">
+  <img id="templateImg" src="hakiri.jpg" style="width: 100%; height: 100%; position: absolute; z-index: 0;" />
+  
+  <div id="titleText" class="cert-text" style="z-index: 1;">Certificate of Completion</div>
+  <div id="presentedText" class="cert-text" style="z-index: 1;">This certificate is presented to</div>
+  <div id="nameText" class="cert-text" style="z-index: 1;">Your Name</div>
+  <div id="reasonText" class="cert-text" style="z-index: 1;">For outstanding performance</div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
